@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mi-app-service
+  namespace: ips
+spec:
+  type: NodePort # Or LoadBalancer if you are on the cloud (AWS/Azure/GCP)
+  selector:
+    app: mi-app # It has to match the label in the Deployment
+  ports:
+    - protocol: TCP
+      port: 8080 # Port that the service will expose
+      nodePort: 30007 # NodePort to access the service from outside the cluster (30000-32767 range)

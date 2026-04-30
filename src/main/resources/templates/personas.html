@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Personas</title>
+<!-- jQuery library -->
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	rel="stylesheet"></link>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<strong>Personas</strong>
+		</div>
+		<div class="panel-body">
+			<div class="table-responsive">
+				<table
+					class="table table-sm table-striped table-hover table-bordered">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Last Name</th>
+							<th>DNI</th>
+							<th>Operations</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="persona : ${personas}">
+							<td th:text="${persona.nombre}"></td>
+							<td th:text="${persona.apellido}"></td>
+							<td th:text="${persona.dni}"></td>
+							<td>
+								<div class="btn-group">
+
+									<form action="#" id="deleteForm" th:method="delete"
+										th:action="@{/personas/{id}(id=${persona.dni})}">
+										<input type="submit" class="delete btn btn-sm btn-danger"
+											value="Delete" />
+									</form>
+
+									<form action="#" id="editForm" th:method="get"
+										th:action="@{/personas/edit/{id}(id=${persona.dni})}">
+										<input type="submit" class="primary btn btn-sm btn-primary"
+											value="Edit" />
+									</form>
+
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div th:if="${delete != null && delete}" class="alert alert-success">
+			<strong>OK!</strong> The person has been deleted successfully.
+		</div>
+		<div th:if="${delete != null && !delete}" class="alert alert-danger">
+			<strong>Error!</strong> Error deleting the person.
+		</div>
+		<div th:if="${update != null && update}" class="alert alert-success">
+			<strong>OK!</strong> The person has been updated successfully.
+		</div>
+		<div th:if="${update != null && !update}" class="alert alert-danger">
+			<strong>Error!</strong> Error updating the person.
+		</div>
+		<div th:if="${create != null && create}" class="alert alert-success">
+			<strong>OK!</strong> The person has been created successfully.
+		</div>
+		<div th:if="${create != null && !create}" class="alert alert-danger">
+			<strong>Error!</strong> Error creating the person.
+		</div>
+		<div class="panel-footer">
+			<a class="btn btn-sm btn-success" th:href="@{/personas/add/}">New person</a> 
+			<a class="btn btn-sm btn-primary" th:href="@{/}">Back</a>
+		</div>
+	</div>
+</body>
+</html>

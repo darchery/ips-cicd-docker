@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Spring demo</title>
+</head>
+<body>
+	<h1>Spring demo</h1>
+
+	<div>
+		<a href="/console"> Database</a> (In the JDBC
+        URL parameter, use the connection string specified in the
+        application.properties file. Example: jdbc:h2:file:./database)
+	</div>
+	<br>
+
+	<div sec:authorize="isAuthenticated()">
+		<h1>Options</h1>
+		<div>
+			<a href="/libros">Browse books</a>
+		</div>
+		<div>
+			<a href="/personas">Browse people</a>
+		</div>
+	</div>
+
+	<br>
+	<div sec:authorize="isAuthenticated()">
+		<div>
+			You are logged in as <b sec:authentication="name"></b>
+		</div>
+		<form th:action="@{/logout}" method="post">
+			<input type="submit" value="Logout" />
+		</form>
+	</div>
+
+	<div sec:authorize="isAnonymous()">
+		<div>You are not logged in</div>
+		<a href="/login">Login</a>
+	</div>
+
+
+</body>
+</html>
