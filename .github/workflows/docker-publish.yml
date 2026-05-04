@@ -61,3 +61,45 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
           retrying-max-attempts: 3
+
+  deploy-to-k8s:
+    needs: build-and-publish # It will not start until the previous job has successfully completed.
+    runs-on: self-hosted 
+    
+    steps:
+      - name: Code checkout (Manifiesto K8s)
+        uses: actions/checkout@v4
+
+      - name: Set up kubectl
+        run: |
+          # Install kubectl if not already available
+          if ! command -v kubectl &> /dev/null; then
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin/
+          fi
+
+      - name: Update deployment image
+        run: |
+          # Update the deployment with the new image using abbreviated SHA
+          kubectl set image deployment/${{ vars.DEPLOYMENT_NAME }} \
+            ${{ vars.DEPLOYMENT_NAME }}=${{ vars.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${GITHUB_SHA::7} \
+            --namespace=${{ vars.NAMESPACE }}
+
+      - name: Wait for deployment rollout
+        run: |
+          # Wait for the deployment to complete
+          kubectl rollout status deployment/${{ vars.DEPLOYMENT_NAME }} \
+            --namespace=${{ vars.NAMESPACE }} \
+            --timeout=30s
+      
+      - name: Verify deployment
+        run: |
+          # Get deployment status
+          kubectl get deployment ${{ vars.DEPLOYMENT_NAME }} --namespace=${{ vars.NAMESPACE }}
+          
+          # Get pod status
+          kubectl get pods -l name=pod-${{ vars.DEPLOYMENT_NAME }} --namespace=${{ vars.NAMESPACE }}
+          
+          # Show recent events
+          kubectl get events --namespace=${{ vars.NAMESPACE }} --sort-by='.lastTimestamp' | tail -10

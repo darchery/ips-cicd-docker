@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app  # This should match the var DEPLOYMENT_NAME
+  namespace: ips
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mi-app
+  template:
+    metadata:
+      labels:
+        app: mi-app
+    spec:
+      imagePullSecrets:
+        - name: mi-registro-secreto
+      containers:
+      - name: backend-app  # This should match the var DEPLOYMENT_NAME
+        image: darchery/ips-cicd-docker:latest 
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
